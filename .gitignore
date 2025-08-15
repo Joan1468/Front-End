@@ -1,0 +1,83 @@
+# Android Studio & IntelliJ
+.idea/
+*.iml
+*.iws
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+.gradle/caches/
+.gradle/daemon/
+.gradle/native/
+.gradle/taskArtifacts/
+.gradle/config/
+.gradle/gradle.properties
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log and temp files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Jetpack Compose compiler caches
+*.kotlin_module
+.kotlin_build/
+.kapt/
+.cache/
+
+# Android Studio Navigation Editor temp files
+.navigation/
+
+# APKs
+*.apk
+*.ap_
+
+# Proguard
+proguard/
+
+# Keystore files (don’t commit these!)
+*.jks
+*.keystore
+
+# Google Services (Optional - if using Firebase)
+google-services.json
+google-services.plist
+
+# Crashlytics
+fabric.properties
+crashlytics-build.properties
+
+# Fastlane metadata
+fastlane/report.xml
+fastlane/screenshots
+fastlane/metadata
+
+# NDK
+obj/
+
+# Test results
+test-results/
+test-output/
+
+# Coverage reports
+coverage/
+*.ec
+
+# CI/CD (Optional)
+.ci/
+*.hprof
+
+# Kotlin/Compose specific
+compose-metrics/
+compose-traces/
