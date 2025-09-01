@@ -12,12 +12,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.udec.cajica.viewModel.EquipoViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EliminarEquipoScreen(navController: NavHostController, viewModel: EquipoViewModel) {
     var idEquipo by remember { mutableStateOf("") } // ✅ Estado local para el ID
     val error by viewModel.error.collectAsState() // ✅ Usar collectAsState para Flow
+    val scope = rememberCoroutineScope() // ✅ Necesario para lanzar corrutina
 
     Scaffold(
         topBar = {
@@ -58,14 +60,19 @@ fun EliminarEquipoScreen(navController: NavHostController, viewModel: EquipoView
 
             Button(
                 onClick = {
-                    viewModel.eliminarEquipo(idEquipo.toLong()) // ✅ Aquí corregido
-                    navController.popBackStack()
+                    scope.launch { // ✅ Corrutina para llamar a la función suspendida
+                        if (idEquipo.isNotBlank()) {
+                            viewModel.eliminarEquipo(idEquipo.toLong())
+                            navController.popBackStack()
+                        }
+                    }
                 },
                 enabled = idEquipo.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Eliminar equipo")
             }
+
             // ✅ Mostrar error si existe
             if (error != null) {
                 Text(

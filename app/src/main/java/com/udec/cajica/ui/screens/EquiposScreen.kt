@@ -1,106 +1,95 @@
 package com.udec.cajica.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState // ✅ Import correcto
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.udec.cajica.navigation.Screen
-import com.udec.cajica.ui.components.EmptyState
-import com.udec.cajica.ui.components.ErrorState
-import com.udec.cajica.ui.components.LoadingState
+import androidx.navigation.NavController
+import com.udec.cajica.data.model.Equipo
+import com.udec.cajica.viewModel.EquipoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("unused")
 @Composable
 fun EquiposScreen(
-    navController: NavHostController,
-    viewModel: com.udec.cajica.viewModel.EquipoViewModel
+    navController: NavController,
+    viewModel: EquipoViewModel
 ) {
-    // ✅ Usar collectAsState() en lugar de .value
-    val loading = viewModel.loading.collectAsState().value
-    val error = viewModel.error.collectAsState().value
+    val equipos = viewModel.equipos.collectAsState().value
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Equipos",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
+            TopAppBar(title = { Text("Lista de Equipos") })
         },
         floatingActionButton = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                FloatingActionButton(
-                    onClick = { navController.navigate(Screen.CrearEquipo.route) },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Agregar equipo", tint = MaterialTheme.colorScheme.onPrimary)
-                }
-
-                FloatingActionButton(
-                    onClick = { navController.navigate(Screen.BuscarEquipo.route) },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(Icons.Default.Search, contentDescription = "Buscar equipo", tint = MaterialTheme.colorScheme.onPrimary)
-                }
-
-                FloatingActionButton(
-                    onClick = { navController.navigate(Screen.EliminarEquipo.route) },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(Icons.Default.Delete, contentDescription = "Eliminar equipo", tint = MaterialTheme.colorScheme.onPrimary)
-                }
+            FloatingActionButton(onClick = {
+                navController.navigate("agregarEquipo")
+            }) {
+                Text("+")
             }
         }
-    ) { padding ->
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
         ) {
-            when {
-                loading -> LoadingState("Cargando equipos...")
-                error != null -> ErrorState("Ocurrió un error: $error")
-                else -> {
-                    // ✅ Por ahora muestra vacío, sin equipos
-                    EmptyState("No hay equipos registrados.")
+            if (equipos.isEmpty()) {
+                Text("No hay equipos registrados")
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(equipos) { equipo ->
+                        EquipoCard(
+                            equipo = equipo,
+                            onDeleteClick = {
+                                navController.navigate("eliminarEquipo/${equipo.idEquipo}")
+                            }
+                        )
+                    }
                 }
             }
         }
     }
 }
+
+@Composable
+fun EquipoCard(
+    equipo: Equipo,
+    onDeleteClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(text = "Serial: ${equipo.serial}", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Placa: ${equipo.placa}", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Marca: ${equipo.marca?.nombre ?: "Sin marca"}", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Tipo: ${equipo.tipoEquipo.nombre}", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Estado: ${equipo.estado?.nombre ?: "Sin estado"}", style = MaterialTheme.typography.bodyMedium)
+            }
+            Button(
+                onClick = { onDeleteClick() },
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+            ) {
+                Text("Eliminar")
+            }
+        }
+    }
+}
+

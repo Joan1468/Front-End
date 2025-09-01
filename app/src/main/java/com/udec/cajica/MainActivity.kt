@@ -1,5 +1,6 @@
 package com.udec.cajica
 
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,29 +9,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.udec.cajica.navigation.AppNavigator
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import com.udec.cajica.ui.theme.CajicaTheme
+import com.udec.cajica.viewModel.EquipoViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import com.udec.cajica.navigation.AppNavigator
+
 
 @AndroidEntryPoint
-class    MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
-        // 1. Habilita contenido edge-to-edge (detrás de status y navegación)
-        enableEdgeToEdge()  // :contentReference[oaicite:6]{index=6}
-
-        // 2. Define el contenido de la UI con Compose
         setContent {
-            // 3. Aplica tu tema basado en Material 3
             CajicaTheme {
-                // 4. Surface que pinta el fondo con colorScheme.background
+                val navController = rememberNavController()
+                val equipoViewModel: EquipoViewModel = hiltViewModel()
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // 5. Composable raíz que contiene el NavHost
-                    AppNavigator()  // :contentReference[oaicite:7]{index=7}
+                    AppNavigator(navController = navController, viewModel = equipoViewModel)
                 }
             }
         }

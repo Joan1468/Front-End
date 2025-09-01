@@ -1,4 +1,4 @@
-package com.udec.cajica.ui.screens // ✅ Ajuste correcto: la ruta debe coincidir con la carpeta real
+package com.udec.cajica.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,18 +10,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.udec.cajica.data.model.Equipo // ✅ Ajuste correcto para la ruta del modelo
+import androidx.navigation.NavHostController
+import com.udec.cajica.data.model.Equipo
+import com.udec.cajica.navigation.Screen // ✅ Cambia AppScreen por Screen
 
 /**
  * Pantalla que muestra la lista de equipos.
- *
- * @param equipos Lista de objetos Equipo que se mostrarán.
- * @param onEquipoClick Acción que se ejecuta cuando se hace clic en un equipo.
  */
 @Composable
 fun ListaEquiposScreen(
+    navController: NavHostController,
     equipos: List<Equipo>,
-    onEquipoClick: (Equipo) -> Unit
+    onBuscarEquipoClick: () -> Unit // ✅ Agrega este parámetro si lo necesitas
 ) {
     Column(
         modifier = Modifier
@@ -36,10 +36,15 @@ fun ListaEquiposScreen(
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxSize() // ✅ Añadido para ocupar todo el espacio
+            modifier = Modifier.fillMaxSize()
         ) {
             items(equipos) { equipo ->
-                EquipoItem(equipo = equipo, onClick = { onEquipoClick(equipo) })
+                EquipoItem(
+                    equipo = equipo,
+                    onClick = {
+
+                    }
+                )
             }
         }
     }
@@ -47,9 +52,6 @@ fun ListaEquiposScreen(
 
 /**
  * Item que representa un equipo dentro de la lista.
- *
- * @param equipo Objeto Equipo que se mostrará.
- * @param onClick Acción cuando se toca el item.
  */
 @Composable
 fun EquipoItem(equipo: Equipo, onClick: () -> Unit) {
@@ -57,11 +59,10 @@ fun EquipoItem(equipo: Equipo, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(vertical = 4.dp), // ✅ Mantengo padding vertical
+            .padding(vertical = 4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // ✅ Conversión a String para evitar errores si idEquipo no es String
             Text(
                 text = equipo.idEquipo.toString(),
                 style = MaterialTheme.typography.titleMedium
@@ -69,9 +70,22 @@ fun EquipoItem(equipo: Equipo, onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // ✅ Si serial puede ser null, usamos el operador ?: para evitar crash
             Text(
                 text = "Serial: ${equipo.serial ?: "Sin serial"}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "Placa: ${equipo.placa ?: "Sin placa"}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "Tipo: ${equipo.tipoEquipo ?: "Sin tipo"}",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

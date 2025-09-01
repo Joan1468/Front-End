@@ -28,19 +28,21 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
         buildConfig = true
     }
 }
-
 
 dependencies {
     // Core & Lifecycle
@@ -63,7 +65,6 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
 
-
     // Navigation
     implementation(libs.navigation.runtime.ktx)
     implementation(libs.navigation.compose)
@@ -74,8 +75,12 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.runtime.livedata)
     ksp(libs.hilt.compiler)
 
+    // ZXing (para escanear códigos QR)
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")  // Escáner embebido
+    implementation("com.google.zxing:core:3.5.2") // Core ZXing
 
     // Tests
     testImplementation(libs.junit)

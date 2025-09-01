@@ -16,6 +16,7 @@ hilt_nav = "1.2.0"
 coil = "2.7.0"
 hilt = "2.56.2"
 iconsExtended = "1.7.8"
+runtimeLivedata = "1.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,6 +50,7 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
 material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "iconsExtended" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

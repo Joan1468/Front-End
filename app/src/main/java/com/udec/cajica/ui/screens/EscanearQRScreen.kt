@@ -1,4 +1,4 @@
-package com.example.appinventario.ui.screens
+package com.udec.cajica.ui.screens
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -15,14 +15,17 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.google.zxing.integration.android.IntentIntegrator
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.ComponentActivity
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EscanearQRScreen(navController: NavController) {
     val context = LocalContext.current
     var resultadoQR by remember { mutableStateOf<String?>(null) }
     var tienePermisoCamara by remember { mutableStateOf(false) }
 
-    // ✅ Verificación y solicitud de permisos de cámara
+    // ✅ Permisos de cámara
     val launcherPermiso = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { concedido -> tienePermisoCamara = concedido }
@@ -52,14 +55,13 @@ fun EscanearQRScreen(navController: NavController) {
         ) {
             if (tienePermisoCamara) {
                 Button(onClick = {
-                    // ✅ Lanzamos el escáner QR usando ZXing
-                    IntentIntegrator(context as androidx.activity.ComponentActivity).apply {
-                        setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-                        setPrompt("Escanea el código QR del equipo")
-                        setCameraId(0)
-                        setBeepEnabled(true)
-                        initiateScan()
-                    }
+                    // ✅ Lanzamos el escáner QR
+                    val integrator = IntentIntegrator(context as ComponentActivity)
+                    integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+                    integrator.setPrompt("Escanea el código QR del equipo")
+                    integrator.setCameraId(0)
+                    integrator.setBeepEnabled(true)
+                    integrator.initiateScan()
                 }) {
                     Text("Escanear QR")
                 }
@@ -68,7 +70,6 @@ fun EscanearQRScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("Resultado: $it", textAlign = TextAlign.Center)
                     Button(onClick = {
-                        // ✅ Navegamos al detalle del equipo usando el ID leído del QR
                         navController.navigate("detalle_equipo/$it")
                     }) {
                         Text("Ver Detalle")

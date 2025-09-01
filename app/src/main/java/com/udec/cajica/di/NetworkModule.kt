@@ -3,6 +3,7 @@ package com.udec.cajica.di
 import com.udec.cajica.data.api.ApiService
 import com.udec.cajica.data.api.RetrofitClient
 import com.udec.cajica.data.repository.UsuarioRepository
+import com.udec.cajica.data.repository.EquipoRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,4 +25,9 @@ object NetworkModule {
     @Singleton
     fun provideUsuarioRepository(api: ApiService): UsuarioRepository =
         UsuarioRepository(api)
+
+    @Provides
+    @Singleton
+    fun provideEquipoRepository(api: ApiService): EquipoRepository =
+        EquipoRepository(api)
 }

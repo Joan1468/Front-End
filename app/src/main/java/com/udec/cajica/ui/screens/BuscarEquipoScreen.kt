@@ -1,71 +1,82 @@
 package com.udec.cajica.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.udec.cajica.viewModel.EquipoViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BuscarEquipoScreen(
-    navController: NavHostController,
+    navController: NavHostController, // ✅ Agregado
     viewModel: EquipoViewModel
 ) {
-    var idEquipo by remember { mutableStateOf("") }
-    val error = viewModel.error.collectAsState().value
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Buscar Equipo") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            OutlinedTextField(
-                value = idEquipo,
-                onValueChange = { idEquipo = it },
-                label = { Text("ID del equipo") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
+@Composable
+fun BuscarEquipoScreen(viewModel: EquipoViewModel = hiltViewModel()) {
+    val query = remember { mutableStateOf(TextFieldValue("")) }
+    val equipos by viewModel.equipos.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
 
-            Button(
-                onClick = {
-                    // Aquí llamas tu lógica para buscar el equipo en tu ViewModel
-                    // Por ejemplo:
-                    // viewModel.buscarEquipoPorId(idEquipo.toLong())
-                },
-                enabled = idEquipo.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Buscar")
+    Column(Modifier.padding(16.dp)) {
+        TextField(
+            value = query.value,
+            onValueChange = { query.value = it },
+            label = { Text("Ingrese el ID del equipo") }
+        )
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = {
+            if (query.value.text.isNotEmpty()) {
+                val id = query.value.text.toLongOrNull()
+                if (id != null) {
+                    viewModel.buscarEquipoPorId(id)
+                }
             }
+        }) {
+            Text("Buscar")
+        }
 
-            if (error != null) {
-                Text(
-                    text = "Error: $error",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+        Spacer(Modifier.height(16.dp))
+
+        when {
+            isLoading -> {
+                CircularProgressIndicator()
+            }
+            error != null -> {
+                Text("Error: $error", color = Color.Red)
+            }
+            else -> {
+                if (equipos.isEmpty()) {
+                    Text("No se encontraron equipos.")
+                } else {
+                    LazyColumn {
+                        items(equipos) { equipo ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            ) {
+                                Column(Modifier.padding(8.dp)) {
+                                    Text("ID: ${equipo.idEquipo}")
+
+                                    Text("Serial: ${equipo.serial}")
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-}
+}}

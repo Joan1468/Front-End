@@ -1,46 +1,80 @@
-package com.example.appinventario.ui.screens
+package com.udec.cajica.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.example.appinventario.viewmodel.EquiposViewModel
-import com.udec.cajica.viewModel.EquipoViewModel
+import com.udec.cajica.data.model.Equipo
 
 @Composable
-fun ReporteEquiposScreen(navController: NavController, viewModel: EquipoViewModel) {
-    val equipos by viewModel.listaEquipos.collectAsState()
+fun ReporteEquiposScreen(
+    equipos: List<Equipo>,
+    onVerQR: (Equipo) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Text(
+            text = "Reporte de Equipos",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Reporte de Equipos") })
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Generar reporte en:", style = MaterialTheme.typography.titleLarge)
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button(onClick = {
-                viewModel.exportarReportePDF(equipos)
-            }) {
-                Text("Exportar a PDF")
+        LazyColumn {
+            items(equipos) { equipo ->
+                ReporteEquipoItem(equipo = equipo, onVerQR = { onVerQR(equipo) })
             }
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Button(onClick = {
-                viewModel.exportarReporteExcel(equipos)
-            }) {
-                Text("Exportar a Excel")
+@Composable
+fun ReporteEquipoItem(
+    equipo: Equipo,
+    onVerQR: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable { onVerQR() },
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Tipo: ${equipo.tipoEquipo.nombre}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "Serial: ${equipo.serial}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Placa: ${equipo.placa}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Marca: ${equipo.marca?.nombre ?: "Sin marca"}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = "Estado: ${equipo.estado?.nombre ?: "Sin estado"}",
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
     }

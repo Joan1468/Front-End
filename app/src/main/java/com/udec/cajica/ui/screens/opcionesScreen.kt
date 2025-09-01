@@ -31,31 +31,15 @@ fun OpcionesScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                onClick = { navController.navigate(Screen.CrearUsuario.route) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Crear usuario")
-            }
 
-            Button(
-                onClick = { navController.navigate(Screen.BuscarUsuario.route) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Buscar usuario")
-            }
 
-            Button(
-                onClick = { navController.navigate(Screen.EliminarUsuario.route) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Eliminar usuario")
-            }
 
-            // Si quieres usar este botón, quita los comentarios
+
+
             /*
+            Si deseas usar este botón para equipos, descomenta:
             Button(
-                onClick = { navController.navigate(Screen.Equipo.route) },
+                onClick = { navController.navigate(Screen.Equipos) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Ver equipos")
